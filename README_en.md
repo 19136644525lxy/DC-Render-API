@@ -1,63 +1,63 @@
 # DC Render API
 
-DC Render API 是一个 Minecraft Forge 模组，提供高级的粒子渲染和动画系统，为模组开发者提供了强大的粒子效果创建工具。
+DC Render API is a Minecraft Forge mod that provides advanced particle rendering and animation systems, offering powerful particle effect creation tools for mod developers.
 
-跳转至英文介绍：[README_en.md](README_en.md)
+Jump to the Chinese introduction: [README.md](README.md)
 
-## 功能特性
+## Features
 
-### 核心功能
-- **可控粒子系统**：创建和管理可控制的粒子实例
-- **粒子动画系统**：内置多种预设动画效果和时间线系统
-- **服务器端粒子同步**：实现客户端和服务器端的粒子状态同步
-- **粒子组管理**：批量管理粒子效果
-- **粒子发射器系统**：创建和管理粒子发射源
-- **粒子样式系统**：自定义粒子外观和行为
-- **弹幕系统**：创建复杂的弹幕效果
-- **显示实体系统**：管理和渲染显示实体
-- **效果系统**：组合多种粒子和动画效果
-- **事件系统**：响应游戏事件和粒子生命周期
-- **噪声系统**：生成自然的随机效果
+### Core Features
+- **Controllable Particle System**: Create and manage controllable particle instances
+- **Particle Animation System**: Built-in multiple preset animation effects and timeline system
+- **Server-side Particle Synchronization**: Achieve particle state synchronization between client and server
+- **Particle Group Management**: Batch management of particle effects
+- **Particle Emitter System**: Create and manage particle emission sources
+- **Particle Style System**: Customize particle appearance and behavior
+- **Barrage System**: Create complex barrage effects
+- **Display Entity System**: Manage and render display entities
+- **Effect System**: Combine multiple particle and animation effects
+- **Event System**: Respond to game events and particle lifecycle
+- **Noise System**: Generate natural random effects
 
-### 动画效果
-- 圆形轨道动画
-- 螺旋轨道动画
-- 波浪运动动画
-- 随机游走动画
-- 缓动动画（Ease）
-- 时间线动画
-- 组合动画
+### Animation Effects
+- Circular orbit animation
+- Spiral orbit animation
+- Wave motion animation
+- Random walk animation
+- Ease animation
+- Timeline animation
+- Combined animation
 
-## 项目结构
+## Project Structure
 
 ```
 DC Render API/
 ├── src/
 │   └── main/
 │       ├── java/com/qituo/dcrapi/
-│       │   ├── DcRenderApi.java             # 主模组类
-│       │   ├── network/                      # 网络相关类
-│       │   │   ├── DcRenderApiNetwork.java   # 网络包注册
-│       │   │   ├── ParticleGroupPacket.java  # 粒子组同步包
-│       │   │   └── ParticleSyncPacket.java   # 粒子同步包
-│       │   ├── particles/                    # 粒子相关类
-│       │   │   ├── emitters/                 # 粒子发射器
-│       │   │   │   ├── ParticleEmitter.java      # 粒子发射器接口
-│       │   │   │   └── ParticleEmitterManager.java # 粒子发射器管理器
-│       │   │   ├── style/                    # 粒子样式
-│       │   │   │   ├── ParticleStyle.java         # 粒子样式接口
-│       │   │   │   └── ParticleStyleManager.java  # 粒子样式管理器
-│       │   │   ├── ClientParticleGroupManager.java  # 客户端粒子组管理
-│       │   │   ├── ControlableParticle.java         # 可控粒子接口
-│       │   │   ├── DcRenderApiParticleManager.java  # 粒子管理器
-│       │   │   ├── ParticleAnimationExample.java    # 粒子动画示例
-│       │   │   ├── ServerParticleGroup.java         # 服务器端粒子组
-│       │   │   └── ServerParticleGroupManager.java  # 服务器端粒子组管理
-│       │   └── platform/                     # 平台相关类
-│       │       └── DcRenderApiServices.java  # 服务接口
-│       └── kotlin/com/qituo/dcrapi/          # Kotlin实现
-│           ├── animation/                    # 动画系统
-│           │   ├── timeline/                 # 时间线系统
+│       │   ├── DcRenderApi.java             # Main mod class
+│       │   ├── network/                      # Network related classes
+│       │   │   ├── DcRenderApiNetwork.java   # Network packet registration
+│       │   │   ├── ParticleGroupPacket.java  # Particle group synchronization packet
+│       │   │   └── ParticleSyncPacket.java   # Particle synchronization packet
+│       │   ├── particles/                    # Particle related classes
+│       │   │   ├── emitters/                 # Particle emitters
+│       │   │   │   ├── ParticleEmitter.java      # Particle emitter interface
+│       │   │   │   └── ParticleEmitterManager.java # Particle emitter manager
+│       │   │   ├── style/                    # Particle styles
+│       │   │   │   ├── ParticleStyle.java         # Particle style interface
+│       │   │   │   └── ParticleStyleManager.java  # Particle style manager
+│       │   │   ├── ClientParticleGroupManager.java  # Client particle group management
+│       │   │   ├── ControlableParticle.java         # Controllable particle interface
+│       │   │   ├── DcRenderApiParticleManager.java  # Particle manager
+│       │   │   ├── ParticleAnimationExample.java    # Particle animation examples
+│       │   │   ├── ServerParticleGroup.java         # Server-side particle group
+│       │   │   └── ServerParticleGroupManager.java  # Server-side particle group management
+│       │   └── platform/                     # Platform related classes
+│       │       └── DcRenderApiServices.java  # Service interface
+│       └── kotlin/com/qituo/dcrapi/          # Kotlin implementation
+│           ├── animation/                    # Animation system
+│           │   ├── timeline/                 # Timeline system
 │           │   │   ├── DoubleConstTimeAnimator.kt
 │           │   │   ├── Ease.kt
 │           │   │   ├── Eases.kt
@@ -65,67 +65,67 @@ DC Render API/
 │           │   │   └── ValueConstTimeAnimator.kt
 │           │   ├── Animate.kt
 │           │   └── AnimateManager.kt
-│           ├── barrages/                     # 弹幕系统
+│           ├── barrages/                     # Barrage system
 │           │   ├── Barrage.kt
 │           │   └── BarrageManager.kt
-│           ├── color/                        # 颜色系统
+│           ├── color/                        # Color system
 │           │   └── Color.kt
-│           ├── config/                       # 配置系统
+│           ├── config/                       # Configuration system
 │           │   ├── Config.kt
 │           │   └── ConfigManager.kt
-│           ├── display/                      # 显示实体系统
+│           ├── display/                      # Display entity system
 │           │   ├── DisplayEntity.kt
 │           │   └── DisplayEntityManager.kt
-│           ├── effects/                      # 效果系统
+│           ├── effects/                      # Effect system
 │           │   ├── Effect.kt
 │           │   └── EffectManager.kt
-│           ├── event/                        # 事件系统
+│           ├── event/                        # Event system
 │           │   ├── Event.kt
 │           │   ├── EventBus.kt
 │           │   └── Events.kt
-│           ├── math/                         # 数学工具
+│           ├── math/                         # Math utilities
 │           │   └── Vec3.kt
-│           ├── noise/                        # 噪声系统
+│           ├── noise/                        # Noise system
 │           │   ├── Noise.kt
 │           │   └── PerlinNoise.kt
-│           ├── particles/                    # 粒子系统
-│           │   ├── emitters/                 # 粒子发射器实现
+│           ├── particles/                    # Particle system
+│           │   ├── emitters/                 # Particle emitter implementation
 │           │   │   └── BasicParticleEmitter.kt
-│           │   ├── style/                    # 粒子样式实现
+│           │   ├── style/                    # Particle style implementation
 │           │   │   └── BasicParticleStyle.kt
-│           │   └── ParticleAnimation.kt      # 粒子动画实现
-│           ├── render/                       # 渲染系统
+│           │   └── ParticleAnimation.kt      # Particle animation implementation
+│           ├── render/                       # Render system
 │           │   ├── Render.kt
 │           │   └── RenderManager.kt
-│           └── shapes/                       # 形状系统
+│           └── shapes/                       # Shape system
 │               ├── Circle.kt
 │               └── Shape.kt
-├── build.gradle                              # Gradle构建文件
-├── gradle.properties                         # Gradle属性
-└── settings.gradle                           # Gradle设置
+├── build.gradle                              # Gradle build file
+├── gradle.properties                         # Gradle properties
+└── settings.gradle                           # Gradle settings
 ```
 
-## 快速开始
+## Quick Start
 
-### 环境要求
+### Requirements
 - Minecraft 1.20.1+
 - Forge 47.4.17+
 - Java 17+
 
-### 安装方法
-1. 将模组 JAR 文件放入 Minecraft 游戏目录的 `mods` 文件夹中
-2. 启动游戏，模组会自动加载
+### Installation
+1. Place the mod JAR file into the `mods` folder of your Minecraft game directory
+2. Start the game, and the mod will load automatically
 
-## API 使用示例
+## API Usage Examples
 
-### 创建可控粒子
+### Creating Controllable Particles
 
 ```java
 import com.qituo.dcrapi.particles.DcRenderApiParticleManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 
-// 创建一个可控粒子
+// Create a controllable particle
 Vec3 position = new Vec3(0, 0, 0);
 int particleId = DcRenderApiParticleManager.createParticle(
     ParticleTypes.FLAME, 
@@ -134,32 +134,32 @@ int particleId = DcRenderApiParticleManager.createParticle(
 );
 ```
 
-### 使用粒子动画
+### Using Particle Animations
 
 ```java
 import com.qituo.dcrapi.particles.ParticleAnimation;
 import net.minecraft.world.phys.Vec3;
 
-// 创建圆形轨道动画
+// Create circular orbit animation
 Vec3 center = new Vec3(0, 0, 0);
 Vec3 animatedPosition = ParticleAnimation.createCircleOrbit(
-    center,    // 中心点
-    2.0,       // 半径
-    0.1,       // 速度
-    tick       // 当前 tick
+    center,    // Center point
+    2.0,       // Radius
+    0.1,       // Speed
+    tick       // Current tick
 );
 
-// 创建螺旋轨道动画
+// Create spiral orbit animation
 Vec3 spiralPosition = ParticleAnimation.createSpiralOrbit(
-    center,    // 中心点
-    1.0,       // 半径
-    3.0,       // 高度
-    0.1,       // 速度
-    tick       // 当前 tick
+    center,    // Center point
+    1.0,       // Radius
+    3.0,       // Height
+    0.1,       // Speed
+    tick       // Current tick
 );
 ```
 
-### 服务器端粒子
+### Server-side Particles
 
 ```java
 import com.qituo.dcrapi.particles.DcRenderApiParticleManager;
@@ -167,7 +167,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
-// 创建服务器端粒子
+// Create server-side particle
 ServerLevel level = ...;
 Vec3 position = new Vec3(0, 0, 0);
 DcRenderApiParticleManager.createServerParticle(
@@ -178,124 +178,124 @@ DcRenderApiParticleManager.createServerParticle(
 );
 ```
 
-## 粒子组管理
+## Particle Group Management
 
-### 创建粒子组
+### Creating Particle Groups
 
 ```java
 import com.qituo.dcrapi.particles.ServerParticleGroupManager;
 import net.minecraft.world.phys.Vec3;
 
-// 创建粒子组
+// Create particle group
 Vec3 position = new Vec3(0, 0, 0);
 int groupId = ServerParticleGroupManager.createGroup(position);
 
-// 向粒子组添加粒子
+// Add particle to group
 ServerParticleGroupManager.addParticleToGroup(
     groupId, 
     ParticleTypes.FLAME, 
     ParticleTypes.FLAME.get()
 );
 
-// 启动粒子组动画
+// Start group animation
 ServerParticleGroupManager.startGroupAnimation(
     groupId, 
-    "circle",  // 动画类型
-    2.0,       // 半径
-    0.1        // 速度
+    "circle",  // Animation type
+    2.0,       // Radius
+    0.1        // Speed
 );
 ```
 
-## 粒子发射器系统
+## Particle Emitter System
 
-### 创建粒子发射器
+### Creating Particle Emitters
 
 ```java
 import com.qituo.dcrapi.particles.emitters.ParticleEmitterManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 
-// 创建粒子发射器
+// Create particle emitter
 Vec3 position = new Vec3(0, 0, 0);
 int emitterId = ParticleEmitterManager.createEmitter(
     position,
     ParticleTypes.FLAME,
-    10,  // 每秒发射粒子数
-    2.0  // 粒子速度
+    10,  // Particles per second
+    2.0  // Particle speed
 );
 
-// 启动发射器
+// Start emitter
 ParticleEmitterManager.startEmitter(emitterId);
 
-// 停止发射器
+// Stop emitter
 ParticleEmitterManager.stopEmitter(emitterId);
 ```
 
-## 粒子样式系统
+## Particle Style System
 
-### 创建自定义粒子样式
+### Creating Custom Particle Styles
 
 ```java
 import com.qituo.dcrapi.particles.style.ParticleStyleManager;
 import net.minecraft.world.phys.Vec3;
 
-// 创建粒子样式
+// Create particle style
 int styleId = ParticleStyleManager.createStyle(
-    1.0,    // 大小
-    0.5,    // 透明度
-    new Vec3(1, 0, 0),  // 颜色 (红色)
-    2.0     // 生命周期
+    1.0,    // Size
+    0.5,    // Alpha
+    new Vec3(1, 0, 0),  // Color (red)
+    2.0     // Lifetime
 );
 
-// 应用样式到粒子
+// Apply style to particle
 ParticleStyleManager.applyStyleToParticle(particleId, styleId);
 ```
 
-## 弹幕系统
+## Barrage System
 
-### 创建弹幕
+### Creating Barrages
 
 ```java
 import com.qituo.dcrapi.barrages.BarrageManager;
 import net.minecraft.world.phys.Vec3;
 
-// 创建弹幕
+// Create barrage
 Vec3 position = new Vec3(0, 0, 0);
 int barrageId = BarrageManager.createBarrage(
     position,
-    "circle",  // 弹幕类型
-    10,        // 弹幕数量
-    2.0,       // 弹幕速度
-    1.0        // 弹幕半径
+    "circle",  // Barrage type
+    10,        // Barrage count
+    2.0,       // Barrage speed
+    1.0        // Barrage radius
 );
 
-// 启动弹幕
+// Start barrage
 BarrageManager.startBarrage(barrageId);
 ```
 
-## 时间线动画
+## Timeline Animation
 
-### 创建时间线动画
+### Creating Timeline Animations
 
 ```java
 import com.qituo.dcrapi.animation.timeline.Timeline;
 import com.qituo.dcrapi.animation.timeline.Eases;
 import net.minecraft.world.phys.Vec3;
 
-// 创建时间线
+// Create timeline
 Timeline timeline = new Timeline();
 
-// 添加位置动画
+// Add position animation
 Vec3 startPos = new Vec3(0, 0, 0);
 Vec3 endPos = new Vec3(10, 5, 0);
 timeline.addPositionAnimation(
     startPos,
     endPos,
-    200,  // 持续时间（ticks）
-    Eases.easeInOutCubic  // 缓动函数
+    200,  // Duration (ticks)
+    Eases.easeInOutCubic  // Ease function
 );
 
-// 添加大小动画
+// Add scale animation
 timeline.addScaleAnimation(
     1.0,
     2.0,
@@ -303,37 +303,37 @@ timeline.addScaleAnimation(
     Eases.easeOutBounce
 );
 
-// 启动时间线
+// Start timeline
 timeline.start();
 ```
 
-## 效果系统
+## Effect System
 
-### 创建复合效果
+### Creating Composite Effects
 
 ```java
 import com.qituo.dcrapi.effects.EffectManager;
 import net.minecraft.world.phys.Vec3;
 
-// 创建效果
+// Create effect
 Vec3 position = new Vec3(0, 0, 0);
 int effectId = EffectManager.createEffect(position);
 
-// 添加粒子到效果
+// Add particle to effect
 EffectManager.addParticleToEffect(effectId, ParticleTypes.FLAME);
 
-// 添加动画到效果
+// Add animation to effect
 EffectManager.addAnimationToEffect(effectId, "spiral", 2.0, 0.1);
 
-// 启动效果
+// Start effect
 EffectManager.startEffect(effectId);
 ```
 
-## 开发指南
+## Development Guide
 
-### 依赖配置
+### Dependency Configuration
 
-在你的模组 `build.gradle` 文件中添加以下依赖：
+Add the following dependency to your mod's `build.gradle` file:
 
 ```gradle
 dependencies {
@@ -341,14 +341,14 @@ dependencies {
 }
 ```
 
-### 注册粒子类型
+### Registering Particle Types
 
 ```java
 import com.qituo.dcrapi.particles.DcRenderApiParticleManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.registries.RegistryObject;
 
-// 注册自定义粒子类型
+// Register custom particle type
 public static final RegistryObject<SimpleParticleType> CUSTOM_PARTICLE = 
     DcRenderApiParticleManager.PARTICLE_TYPES.register(
         "custom_particle",
@@ -356,14 +356,14 @@ public static final RegistryObject<SimpleParticleType> CUSTOM_PARTICLE =
     );
 ```
 
-### 自定义粒子发射器
+### Custom Particle Emitters
 
 ```java
 import com.qituo.dcrapi.particles.emitters.ParticleEmitter;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
 
-// 创建自定义粒子发射器
+// Create custom particle emitter
 public class CustomEmitter implements ParticleEmitter {
     private Vec3 position;
     private int particleCount;
@@ -375,40 +375,40 @@ public class CustomEmitter implements ParticleEmitter {
     
     @Override
     public void emit() {
-        // 自定义发射逻辑
+        // Custom emission logic
         for (int i = 0; i < particleCount; i++) {
-            // 计算发射位置
+            // Calculate emission position
             Vec3 emitPos = position.add(
                 (Math.random() - 0.5) * 2,
                 (Math.random() - 0.5) * 2,
                 (Math.random() - 0.5) * 2
             );
             
-            // 发射粒子
-            // 这里可以使用 DcRenderApiParticleManager.createParticle
+            // Emit particle
+            // Here you can use DcRenderApiParticleManager.createParticle
         }
     }
     
     @Override
     public void update() {
-        // 自定义更新逻辑
+        // Custom update logic
     }
     
     @Override
     public boolean isAlive() {
-        // 自定义存活逻辑
+        // Custom alive logic
         return true;
     }
 }
 ```
 
-### 自定义粒子样式
+### Custom Particle Styles
 
 ```java
 import com.qituo.dcrapi.particles.style.ParticleStyle;
 import net.minecraft.world.phys.Vec3;
 
-// 创建自定义粒子样式
+// Create custom particle style
 public class CustomStyle implements ParticleStyle {
     private float size;
     private float alpha;
@@ -444,20 +444,20 @@ public class CustomStyle implements ParticleStyle {
     
     @Override
     public void update() {
-        // 自定义更新逻辑
+        // Custom update logic
         size *= 0.99f;
         alpha *= 0.95f;
     }
 }
 ```
 
-### 自定义动画
+### Custom Animations
 
 ```java
 import com.qituo.dcrapi.animation.Animate;
 import net.minecraft.world.phys.Vec3;
 
-// 创建自定义动画
+// Create custom animation
 public class CustomAnimation implements Animate {
     private Vec3 startPos;
     private Vec3 endPos;
@@ -476,7 +476,7 @@ public class CustomAnimation implements Animate {
         float progress = (float) ticks / duration;
         progress = Math.min(progress, 1.0f);
         
-        // 自定义动画逻辑
+        // Custom animation logic
         return startPos.add(endPos.subtract(startPos).scale(progress));
     }
     
@@ -492,14 +492,14 @@ public class CustomAnimation implements Animate {
 }
 ```
 
-## 许可证
+## License
 
-本项目采用 QSUP 许可证，详见 [LICENSE.md](https://github.com/19136644525lxy/DC-Render-API/blob/d0a793767702f641082e73c21edd82c45b892086/LICENSE.md) 文件。
+This project is licensed under the QSUP License. See the [LICENSE.md](https://github.com/19136644525lxy/DC-Render-API/blob/d0a793767702f641082e73c21edd82c45b892086/LICENSE.md) file for details.
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request 来改进这个项目！
+Welcome to submit Issues and Pull Requests to improve this project!
 
-## 联系方式
+## Contact
 
 - GitHub: [19136644525lxy/DC-Render-API](https://github.com/19136644525lxy/DC-Render-API)
