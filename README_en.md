@@ -2,7 +2,7 @@
 
 DC Render API is a Minecraft Forge mod that provides advanced particle rendering and animation systems, offering powerful particle effect creation tools for mod developers.
 
-Jump to the Chinese introduction: [README.md](https://github.com/19136644525lxy/DC-Render-API/blob/aed564d9970a1e71fbf5d6161e040ef09c7230e3/README.md)
+跳转至中文介绍： [README.md](https://github.com/19136644525lxy/DC-Render-API/blob/aed564d9970a1e71fbf5d6161e040ef09c7230e3/README.md)
 
 ## Features
 

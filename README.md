@@ -2,7 +2,7 @@
 
 DC Render API 是一个 Minecraft Forge 模组，提供高级的粒子渲染和动画系统，为模组开发者提供了强大的粒子效果创建工具。
 
-跳转至英文介绍：[README_en.md](https://github.com/19136644525lxy/DC-Render-API/blob/aed564d9970a1e71fbf5d6161e040ef09c7230e3/README_en.md)
+Jump to the English introduction:[README_en.md](https://github.com/19136644525lxy/DC-Render-API/blob/aed564d9970a1e71fbf5d6161e040ef09c7230e3/README_en.md)
 
 ## 功能特性
 
