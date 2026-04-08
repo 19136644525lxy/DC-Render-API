@@ -22,6 +22,7 @@ eclipse
 run
 libs/
 main.bat
+logs/
 
 # Files from Forge MDK
 forge*changelog.txt

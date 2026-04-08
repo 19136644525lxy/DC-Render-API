@@ -16,6 +16,8 @@ import com.qituo.dcrapi.display.DisplayEntityManager;
 import com.qituo.dcrapi.render.RenderManager;
 import com.qituo.dcrapi.effects.EffectManager;
 import com.qituo.dcrapi.network.DcRenderApiNetwork;
+import com.qituo.dcrapi.items.DcRenderApiItems;
+import com.qituo.dcrapi.items.DcRenderApiCreativeTab;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -32,6 +34,12 @@ public class DcRenderApi {
         
         // 注册粒子类型
         DcRenderApiParticleManager.PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        
+        // 注册物品
+        DcRenderApiItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        
+        // 注册创造物品栏
+        DcRenderApiCreativeTab.register(FMLJavaModLoadingContext.get().getModEventBus());
         
         LOGGER.info("DC Render API initialized");
     }
