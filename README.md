@@ -111,6 +111,7 @@ DC Render API/
 - Minecraft 1.20.1+
 - Forge 47.4.17+
 - Java 17+
+- Kotlin for Forge 4.12.0+
 
 ### 安装方法
 1. 将模组 JAR 文件放入 Minecraft 游戏目录的 `mods` 文件夹中

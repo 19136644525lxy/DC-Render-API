@@ -111,6 +111,7 @@ DC Render API/
 - Minecraft 1.20.1+
 - Forge 47.4.17+
 - Java 17+
+- Kotlin for Forge 4.12.0+
 
 ### Installation
 1. Place the mod JAR file into the `mods` folder of your Minecraft game directory
