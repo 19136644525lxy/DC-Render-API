@@ -1,0 +1,28 @@
+{
+    "schemaVersion": 1,
+    "id": "dcrapi",
+    "version": "${version}",
+    "name": "DC Render API",
+    "description": "DC Render API: Custom graphics API powering exclusive visual effects for Dragon Curse Chronicles.",
+    "authors": [
+        "QiTuo",
+        "Yifei"
+    ],
+    "license": "QSUP 1.0.0",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.qituo.dcrapi.DcRenderApi"
+        ],
+        "client": [
+            "com.qituo.dcrapi.client.ClientDcRenderApiInitializer"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.19.3",
+        "minecraft": "~1.20.1",
+        "java": ">=17",
+        "fabric-api": "*",
+        "fabric-language-kotlin": ">=1.13.13+kotlin.2.4.10"
+    }
+}

@@ -2,11 +2,11 @@
 
 DC Render API is a Minecraft Forge mod that provides advanced particle rendering and animation systems, offering powerful particle effect creation tools for mod developers.
 
-跳转至中文介绍： [README.md](https://github.com/19136644525lxy/DC-Render-API/blob/aed564d9970a1e71fbf5d6161e040ef09c7230e3/README.md)
+**Jump to Chinese Documentation**: [README.md](README.md)
 
-## Features
+## Core Features
 
-### Core Features
+### Main Features
 - **Controllable Particle System**: Create and manage controllable particle instances
 - **Particle Animation System**: Built-in multiple preset animation effects and timeline system
 - **Server-side Particle Synchronization**: Achieve particle state synchronization between client and server
@@ -36,6 +36,10 @@ DC Render API/
 │   └── main/
 │       ├── java/com/qituo/dcrapi/
 │       │   ├── DcRenderApi.java             # Main mod class
+│       │   ├── items/                        # Item related classes
+│       │   │   ├── DcRenderApiCreativeTab.java   # Creative tab
+│       │   │   ├── DcRenderApiItems.java         # Item registration
+│       │   │   └── ParticleTesterItem.java       # Particle tester item
 │       │   ├── network/                      # Network related classes
 │       │   │   ├── DcRenderApiNetwork.java   # Network packet registration
 │       │   │   ├── ParticleGroupPacket.java  # Particle group synchronization packet
@@ -72,7 +76,8 @@ DC Render API/
 │           │   └── Color.kt
 │           ├── config/                       # Configuration system
 │           │   ├── Config.kt
-│           │   └── ConfigManager.kt
+│           │   ├── ConfigManager.kt
+│           │   └── DcRenderApiConfig.kt
 │           ├── display/                      # Display entity system
 │           │   ├── DisplayEntity.kt
 │           │   └── DisplayEntityManager.kt
@@ -82,13 +87,20 @@ DC Render API/
 │           ├── event/                        # Event system
 │           │   ├── Event.kt
 │           │   ├── EventBus.kt
-│           │   └── Events.kt
+│           │   ├── Events.kt
+│           │   ├── ParticleEvent.kt
+│           │   ├── ParticleEventBus.kt
+│           │   └── ParticleEvents.kt
 │           ├── math/                         # Math utilities
 │           │   └── Vec3.kt
 │           ├── noise/                        # Noise system
 │           │   ├── Noise.kt
 │           │   └── PerlinNoise.kt
 │           ├── particles/                    # Particle system
+│           │   ├── builder/                  # Builder pattern
+│           │   │   └── ParticleGroupBuilder.kt
+│           │   ├── command/                  # Particle command system
+│           │   ├── composition/              # Particle composition system
 │           │   ├── emitters/                 # Particle emitter implementation
 │           │   │   └── BasicParticleEmitter.kt
 │           │   ├── style/                    # Particle style implementation
@@ -109,7 +121,7 @@ DC Render API/
 
 ### Requirements
 - Minecraft 1.20.1+
-- Forge 47.4.17+
+- Forge 47.x
 - Java 17+
 - Kotlin for Forge 4.12.0+
 
@@ -117,7 +129,32 @@ DC Render API/
 1. Place the mod JAR file into the `mods` folder of your Minecraft game directory
 2. Start the game, and the mod will load automatically
 
-## API Usage Examples
+### Basic Usage (Legacy API, Backward Compatible)
+
+```java
+// Create particle group
+ServerParticleGroup group = new ServerParticleGroup();
+group.initServerGroup(position, serverLevel);
+group.scale = 1.5;
+group.visibleRange = 64.0;
+group.clientMaxTick = 100;
+
+// Register to manager
+ServerParticleGroupManager.addParticleGroup(group, position, serverLevel);
+```
+
+### Builder Pattern (Recommended)
+
+```java
+// Create particle group using Builder pattern
+ServerParticleGroup group = new ParticleGroupBuilder()
+    .position(position)
+    .world(serverLevel)
+    .scale(2.0)
+    .visibleRange(128.0)
+    .maxTick(200)
+    .buildAndRegister();
+```
 
 ### Creating Controllable Particles
 
@@ -179,9 +216,62 @@ DcRenderApiParticleManager.createServerParticle(
 );
 ```
 
-## Particle Group Management
+## Event System
 
-### Creating Particle Groups
+```java
+// Register particle hit entity event
+ParticleEventBus.INSTANCE.register(
+    ParticleHitEntityEvent.class,
+    event -> {
+        // Damage entity when particle hits
+        event.getTarget().hurt(
+            event.getTarget().level().damageSources().magic(),
+            5.0f
+        );
+    }
+);
+```
+
+### Event Types
+
+| Event | Description |
+|-------|-------------|
+| `ParticleCollideEvent` | Particle collides with block |
+| `ParticleHitEntityEvent` | Particle hits entity |
+| `ParticleOnGroundEvent` | Particle lands on ground |
+| `ParticleOnLiquidEvent` | Particle enters liquid |
+
+## Configuration System
+
+Configuration file location: `config/dcrapi_config.properties`
+
+```properties
+# Maximum particle groups
+maxParticleGroups=1000
+
+# Default visible range
+defaultVisibleRange=64.0
+
+# Particle update frequency
+particleTickRate=1
+
+# Enable particle events
+enableParticleEvents=true
+
+# Debug logging
+enableDebugLogging=false
+```
+
+**Runtime Modification**:
+```java
+// Read configuration
+double range = DcRenderApiConfig.INSTANCE.getDefaultVisibleRange();
+
+// Modify configuration
+DcRenderApiConfig.INSTANCE.setMaxParticleGroups(2000);
+```
+
+## Particle Group Management
 
 ```java
 import com.qituo.dcrapi.particles.ServerParticleGroupManager;
@@ -209,8 +299,6 @@ ServerParticleGroupManager.startGroupAnimation(
 
 ## Particle Emitter System
 
-### Creating Particle Emitters
-
 ```java
 import com.qituo.dcrapi.particles.emitters.ParticleEmitterManager;
 import net.minecraft.core.particles.ParticleTypes;
@@ -234,8 +322,6 @@ ParticleEmitterManager.stopEmitter(emitterId);
 
 ## Particle Style System
 
-### Creating Custom Particle Styles
-
 ```java
 import com.qituo.dcrapi.particles.style.ParticleStyleManager;
 import net.minecraft.world.phys.Vec3;
@@ -253,8 +339,6 @@ ParticleStyleManager.applyStyleToParticle(particleId, styleId);
 ```
 
 ## Barrage System
-
-### Creating Barrages
 
 ```java
 import com.qituo.dcrapi.barrages.BarrageManager;
@@ -275,8 +359,6 @@ BarrageManager.startBarrage(barrageId);
 ```
 
 ## Timeline Animation
-
-### Creating Timeline Animations
 
 ```java
 import com.qituo.dcrapi.animation.timeline.Timeline;
@@ -310,8 +392,6 @@ timeline.start();
 
 ## Effect System
 
-### Creating Composite Effects
-
 ```java
 import com.qituo.dcrapi.effects.EffectManager;
 import net.minecraft.world.phys.Vec3;
@@ -330,6 +410,101 @@ EffectManager.addAnimationToEffect(effectId, "spiral", 2.0, 0.1);
 EffectManager.startEffect(effectId);
 ```
 
+## Complete Examples
+
+### Example 1: Creating Fire Vortex
+
+```java
+// Create particle group using Builder
+ServerParticleGroup group = new ParticleGroupBuilder()
+    .position(player.position())
+    .world((ServerLevel) player.level())
+    .scale(3.0)
+    .visibleRange(64.0)
+    .maxTick(100)
+    .buildAndRegister();
+
+// Register collision event
+ParticleEventBus.INSTANCE.register(ParticleCollideEvent.class, event -> {
+    // Ignite block on collision
+    BlockPos pos = new BlockPos(event.getBlockX(), event.getBlockY(), event.getBlockZ());
+    if (event.getWorld().getBlockState(pos).isFlammable()) {
+        event.getWorld().setBlockAndUpdate(pos, Blocks.FIRE.defaultBlockState());
+    }
+});
+```
+
+### Example 2: Tracking Barrage
+
+```java
+// Create tracking particle
+ServerParticleGroup group = new ParticleGroupBuilder()
+    .position(startPos)
+    .world(serverLevel)
+    .scale(1.0)
+    .visibleRange(128.0)
+    .maxTick(200)
+    .buildAndRegister();
+
+// Register hit event
+ParticleEventBus.INSTANCE.register(ParticleHitEntityEvent.class, event -> {
+    // Damage target on hit
+    event.getTarget().hurt(
+        DamageSources.MAGIC,
+        10.0f
+    );
+});
+```
+
+## Performance Optimization Tips
+
+1. **Set reasonable visible range**: Adjust `visibleRange` according to actual needs
+2. **Limit particle count**: Set `maxParticleGroups` through configuration file
+3. **Clean up in time**: Use `ServerParticleGroupManager.clear()` to remove unused particles
+4. **Avoid frequent events**: Avoid time-consuming operations in event handlers
+
+## Thread Safety
+
+All core classes use thread-safe design:
+- `ConcurrentHashMap` for storing particle groups
+- `CopyOnWriteArrayList` for storing event handlers
+- `AtomicInteger` for counters
+
+## Compatibility
+
+- **Minecraft**: 1.20.1
+- **Forge**: 47.x
+- **Java**: 17
+
+## Testing Tools
+
+Use the **Particle Tester** item in-game to test API functionality:
+- **Right-click**: Generate particles
+- **Sneak + Right-click**: Switch test mode (Basic / Builder / Event)
+
+## Migration Guide
+
+Migrating from the old API to the new API is simple:
+
+**Old Code**:
+```java
+ServerParticleGroup group = new ServerParticleGroup();
+group.initServerGroup(pos, world);
+group.scale = 1.5;
+ServerParticleGroupManager.addParticleGroup(group, pos, world);
+```
+
+**New Code**:
+```java
+ServerParticleGroup group = new ParticleGroupBuilder()
+    .position(pos)
+    .world(world)
+    .scale(1.5)
+    .buildAndRegister();
+```
+
+The new API is more concise and supports the event system and configuration system.
+
 ## Development Guide
 
 ### Dependency Configuration
@@ -342,165 +517,7 @@ dependencies {
 }
 ```
 
-### Registering Particle Types
+---
 
-```java
-import com.qituo.dcrapi.particles.DcRenderApiParticleManager;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.registries.RegistryObject;
-
-// Register custom particle type
-public static final RegistryObject<SimpleParticleType> CUSTOM_PARTICLE = 
-    DcRenderApiParticleManager.PARTICLE_TYPES.register(
-        "custom_particle",
-        () -> new SimpleParticleType(false)
-    );
-```
-
-### Custom Particle Emitters
-
-```java
-import com.qituo.dcrapi.particles.emitters.ParticleEmitter;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.phys.Vec3;
-
-// Create custom particle emitter
-public class CustomEmitter implements ParticleEmitter {
-    private Vec3 position;
-    private int particleCount;
-    
-    public CustomEmitter(Vec3 position, int particleCount) {
-        this.position = position;
-        this.particleCount = particleCount;
-    }
-    
-    @Override
-    public void emit() {
-        // Custom emission logic
-        for (int i = 0; i < particleCount; i++) {
-            // Calculate emission position
-            Vec3 emitPos = position.add(
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2
-            );
-            
-            // Emit particle
-            // Here you can use DcRenderApiParticleManager.createParticle
-        }
-    }
-    
-    @Override
-    public void update() {
-        // Custom update logic
-    }
-    
-    @Override
-    public boolean isAlive() {
-        // Custom alive logic
-        return true;
-    }
-}
-```
-
-### Custom Particle Styles
-
-```java
-import com.qituo.dcrapi.particles.style.ParticleStyle;
-import net.minecraft.world.phys.Vec3;
-
-// Create custom particle style
-public class CustomStyle implements ParticleStyle {
-    private float size;
-    private float alpha;
-    private Vec3 color;
-    private float lifetime;
-    
-    public CustomStyle(float size, float alpha, Vec3 color, float lifetime) {
-        this.size = size;
-        this.alpha = alpha;
-        this.color = color;
-        this.lifetime = lifetime;
-    }
-    
-    @Override
-    public float getSize() {
-        return size;
-    }
-    
-    @Override
-    public float getAlpha() {
-        return alpha;
-    }
-    
-    @Override
-    public Vec3 getColor() {
-        return color;
-    }
-    
-    @Override
-    public float getLifetime() {
-        return lifetime;
-    }
-    
-    @Override
-    public void update() {
-        // Custom update logic
-        size *= 0.99f;
-        alpha *= 0.95f;
-    }
-}
-```
-
-### Custom Animations
-
-```java
-import com.qituo.dcrapi.animation.Animate;
-import net.minecraft.world.phys.Vec3;
-
-// Create custom animation
-public class CustomAnimation implements Animate {
-    private Vec3 startPos;
-    private Vec3 endPos;
-    private int duration;
-    private int ticks;
-    
-    public CustomAnimation(Vec3 startPos, Vec3 endPos, int duration) {
-        this.startPos = startPos;
-        this.endPos = endPos;
-        this.duration = duration;
-        this.ticks = 0;
-    }
-    
-    @Override
-    public Vec3 animate() {
-        float progress = (float) ticks / duration;
-        progress = Math.min(progress, 1.0f);
-        
-        // Custom animation logic
-        return startPos.add(endPos.subtract(startPos).scale(progress));
-    }
-    
-    @Override
-    public boolean isDone() {
-        return ticks >= duration;
-    }
-    
-    @Override
-    public void tick() {
-        ticks++;
-    }
-}
-```
-
-## License
-
-This project is licensed under the QSUP License. See the [LICENSE.md](https://github.com/19136644525lxy/DC-Render-API/blob/d0a793767702f641082e73c21edd82c45b892086/LICENSE.md) file for details.
-
-## Contributing
-
-Welcome to submit Issues and Pull Requests to improve this project!
-
-## Contact
-
-- GitHub: [19136644525lxy/DC-Render-API](https://github.com/19136644525lxy/DC-Render-API)
+**Version**: 2.0.0  
+**Authors**: QiTuo, Yifei

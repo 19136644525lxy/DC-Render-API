@@ -18,9 +18,17 @@ import com.qituo.dcrapi.effects.EffectManager;
 import com.qituo.dcrapi.network.DcRenderApiNetwork;
 import com.qituo.dcrapi.items.DcRenderApiItems;
 import com.qituo.dcrapi.items.DcRenderApiCreativeTab;
+import com.qituo.dcrapi.config.DcRenderApiConfig;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import java.io.File;
 
+/**
+ * DC Render API 主类
+ * 提供 Minecraft 1.20.1 的高级粒子渲染功能
+ */
 @Mod(DcRenderApi.MOD_ID)
 public class DcRenderApi {
     public static final String MOD_ID = "dcrapi";
@@ -31,6 +39,8 @@ public class DcRenderApi {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         MinecraftForge.EVENT_BUS.addListener(this::serverTick);
         MinecraftForge.EVENT_BUS.addListener(this::clientTick);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
         
         // 注册粒子类型
         DcRenderApiParticleManager.PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -52,12 +62,28 @@ public class DcRenderApi {
         LOGGER.info("DC Render API setup completed");
     }
     
+    private void serverStarting(final ServerStartingEvent event) {
+        // 加载配置文件
+        File configDir = new File("config");
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+        }
+        File configFile = new File(configDir, "dcrapi_config.properties");
+        DcRenderApiConfig.INSTANCE.load(configFile);
+        LOGGER.info("DC Render API config loaded");
+    }
+    
+    private void serverStopping(final ServerStoppingEvent event) {
+        // 清理资源
+        LOGGER.info("DC Render API resources cleaned up");
+    }
+    
     private void serverTick(final TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ServerParticleGroupManager.tick();
             ParticleStyleManager.tickServer();
             ParticleEmitterManager.tickServer();
-            AnimateManager.tickServer();
+            AnimateManager.INSTANCE.tickServer();
             BarrageManager.doTick();
             DisplayEntityManager.doTick();
             RenderManager.doTick();
@@ -71,7 +97,7 @@ public class DcRenderApi {
             DcRenderApiParticleManager.tick();
             ParticleStyleManager.tickClient();
             ParticleEmitterManager.tickClient();
-            AnimateManager.tickClient();
+            AnimateManager.INSTANCE.tickClient();
             BarrageManager.doTick();
             DisplayEntityManager.doTick();
             RenderManager.doTick();
