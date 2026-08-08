@@ -20,7 +20,7 @@
 |---|---|---|---|---|
 | **Minecraft Forge** | 1.20.1 | `0.2.0-1.20.1Forge` | JDK 17+ | `Kotlin-for-Forge-*-1.20.1.jar` (by thedarkcolour) |
 | **Fabric** | 1.20.1 | `0.2.0-1.20.1Fabric` | JDK 17+ | `fabric-language-kotlin-*` (by FabricMC) |
-| **NeoForge** | 1.21.1 | `0.2.0-1.21.1NeoForge` | JDK 21+ | `Kotlin-for-Forge-*-1.21.1-NeoForge.jar` (by thedarkcolour) |
+| **NeoForge** | 1.21.1 | `1.0.0-1.21.1NeoForge` | JDK 21+ | `Kotlin-for-Forge-*-1.21.1-NeoForge.jar` (by thedarkcolour) |
 
 > ⚠ **Mandatory three-jar setup for every loader**: install the **Kotlin language adapter** + **DC Render API jar** + **the main mod that consumes it (e.g. Dragon Curse Chronicles)**. Missing any one of the three will crash at load.
 
@@ -115,7 +115,7 @@ DC Render API/                                  # Standalone monorepo (this dire
 1. Install NeoForge 21.1.248+ for Minecraft 1.21.1.
 2. Download all three jars and drop them into your `mods/` folder:
    - Kotlin adapter: `Kotlin-for-Forge-*-1.21.1-NeoForge.jar` (thedarkcolour)
-   - DC Render API: `dcrapi-0.2.0-1.21.1NeoForge.jar`
+   - DC Render API: `dcrapi-1.0.0-1.21.1NeoForge.jar`
    - The consuming mod (e.g. **Dragon Curse Chronicles** NeoForge edition)
 3. Launch the game.
 
@@ -142,7 +142,7 @@ cd "DC Render API/fabric/DC Render API"
 
 # ============ NeoForge 1.21.1 ============
 cd "DC Render API/neoforge"
-./gradlew build               # outputs → build/libs/dcrapi-0.2.0-1.21.1NeoForge.jar and -sources.jar
+./gradlew build               # outputs → build/libs/dcrapi-1.0.0-1.21.1NeoForge.jar and -sources.jar
 ```
 > All three `build.gradle` scripts register a `sourcesJar` task, so a `-sources.jar` is produced automatically on every build.
 
@@ -299,7 +299,7 @@ dependencies {
 
 // NeoForge 1.21.1:
 dependencies {
-    implementation("com.qituo:dcrapi:0.2.0-1.21.1NeoForge")
+    implementation("com.qituo:dcrapi:1.0.0-1.21.1NeoForge")
 }
 ```
 > Maven coordinates are the target format; if not yet uploaded to a Maven repo, drop the jars into a local `libs/` folder and use `files(...)` as a dependency.
@@ -343,7 +343,7 @@ Highlights of the 0.2.0 release:
 
 Released under the **MIT License** — see the official standalone license blob at [LICENSE.md on GitHub](https://github.com/19136644525lxy/DC-Render-API/blob/22c6b3a66ec7885f6eea4698329fe4129cd0766b/LICENSE.md).
 
-- **Current version**: `0.2.0` (same across all three loaders)
+- **Current version**: Forge `0.2.0` / Fabric `0.2.0-1.20.1Fabric` / NeoForge `1.0.0` (version numbers are independent per loader)
 - **Authors**: QiTuo, Yifei
 - **Source repo**: https://github.com/19136644525lxy/DC-Render-API
 - **Distribution**: [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dc-render-api) / [Modrinth](https://modrinth.com/mod/dc-render-api)

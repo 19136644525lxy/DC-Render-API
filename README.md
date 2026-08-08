@@ -20,7 +20,7 @@
 |---|---|---|---|---|
 | **Minecraft Forge** | 1.20.1 | `0.2.0-1.20.1Forge` | JDK 17+ | `Kotlin-for-Forge-*-1.20.1.jar`（thedarkcolour） |
 | **Fabric** | 1.20.1 | `0.2.0-1.20.1Fabric` | JDK 17+ | `fabric-language-kotlin-*`（FabricMC） |
-| **NeoForge** | 1.21.1 | `0.2.0-1.21.1NeoForge` | JDK 21+ | `Kotlin-for-Forge-*-1.21.1-NeoForge.jar`（thedarkcolour） |
+| **NeoForge** | 1.21.1 | `1.0.0-1.21.1NeoForge` | JDK 21+ | `Kotlin-for-Forge-*-1.21.1-NeoForge.jar`（thedarkcolour） |
 
 > ⚠ **三件套安装缺一不可**：使用 DC Render API 的玩家/模组，必须同时安装对应平台的 `Kotlin 语言前置` + `DC Render API jar` + 依赖它的主模组（例如 **龙咒异闻录 / Dragon Curse Chronicles**）。
 
@@ -115,7 +115,7 @@ DC Render API/                                  # 独立主仓库（本目录）
 1. 安装 NeoForge 21.1.248+（Minecraft 1.21.1）
 2. 下载 3 份 jar 并全部放入 `mods/`：
    - Kotlin 前置：`Kotlin-for-Forge-*-1.21.1-NeoForge.jar`（thedarkcolour）
-   - DC Render API：`dcrapi-0.2.0-1.21.1NeoForge.jar`
+   - DC Render API：`dcrapi-1.0.0-1.21.1NeoForge.jar`
    - 依赖它的主模组（如：Dragon Curse Chronicles NeoForge 版）
 3. 启动游戏
 
@@ -142,7 +142,7 @@ cd "DC Render API/fabric/DC Render API"
 
 # ================= NeoForge 1.21.1 ==============
 cd "DC Render API/neoforge"
-./gradlew build               # 产物 → build/libs/dcrapi-0.2.0-1.21.1NeoForge.jar + -sources.jar
+./gradlew build               # 产物 → build/libs/dcrapi-1.0.0-1.21.1NeoForge.jar + -sources.jar
 ```
 > 三平台的 `build.gradle` 都已注册 `sourcesJar` 任务，每次 build 自动产出源代码 jar。
 
@@ -298,7 +298,7 @@ dependencies {
 
 // NeoForge 1.21.1：
 dependencies {
-    implementation("com.qituo:dcrapi:0.2.0-1.21.1NeoForge")
+    implementation("com.qituo:dcrapi:1.0.0-1.21.1NeoForge")
 }
 ```
 > 实际 Maven 坐标以发布渠道为准；若未上传 Maven，可把 jar 放入 `libs/`，用 `files(...)` 本地依赖。
@@ -342,7 +342,7 @@ ServerParticleGroup group = new ParticleGroupBuilder()
 
 本项目采用 **MIT License**（独立仓库版 LICENSE 文件见：[LICENSE.md on GitHub](https://github.com/19136644525lxy/DC-Render-API/blob/22c6b3a66ec7885f6eea4698329fe4129cd0766b/LICENSE.md)）。
 
-- **当前版本**：`0.2.0`（三平台统一版本号）
+- **当前版本**：Forge `0.2.0` / Fabric `0.2.0-1.20.1Fabric` / NeoForge `1.0.0`（三平台版本号独立）
 - **作者**：QiTuo, Yifei
 - **代码仓库**：https://github.com/19136644525lxy/DC-Render-API
 - **下载渠道**：[CurseForge](https://www.curseforge.com/minecraft/mc-mods/dc-render-api) / [Modrinth](https://modrinth.com/mod/dc-render-api)
