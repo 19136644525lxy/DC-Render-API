@@ -13,12 +13,13 @@ import com.qituo.dcrapi.DcRenderApi;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DcRenderApiParticleManager {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, DcRenderApi.MOD_ID);
     
     private static final Map<Integer, ControlableParticle> PARTICLES = new ConcurrentHashMap<>();
-    private static int nextParticleId = 0;
+    private static final AtomicInteger nextParticleId = new AtomicInteger(0);
     
     /**
      * 创建可控粒子（客户端）
@@ -32,7 +33,7 @@ public class DcRenderApiParticleManager {
         
         // 创建可控粒子包装器
         ControlableParticle controlableParticle = new ControlableParticleImpl(position);
-        int id = nextParticleId++;
+        int id = nextParticleId.getAndIncrement();
         PARTICLES.put(id, controlableParticle);
         
         return id;

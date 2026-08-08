@@ -33,10 +33,12 @@ public class DcRenderApiServices {
     }
 
     /**
-     * 获取 Minecraft 版本
+     * 获取 Minecraft 版本（通过 FabricLoader 运行时获取，避免硬编码）
      */
     public static String getMinecraftVersion() {
-        return "1.20.1";
+        return FabricLoader.getInstance().getModContainer("minecraft")
+            .map(container -> container.getMetadata().getVersion().getFriendlyString())
+            .orElse("unknown");
     }
 
     /**

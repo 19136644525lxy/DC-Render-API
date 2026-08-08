@@ -1,10 +1,10 @@
 package com.qituo.dcrapi.particles.style;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ParticleStyleManager {
-    private static final Map<Class<? extends ParticleStyle>, ParticleStyle.Provider<? extends ParticleStyle>> styleProviders = new HashMap<>();
+    private static final Map<Class<? extends ParticleStyle>, ParticleStyle.Provider<? extends ParticleStyle>> styleProviders = new ConcurrentHashMap<>();
     
     /**
      * 注册粒子样式

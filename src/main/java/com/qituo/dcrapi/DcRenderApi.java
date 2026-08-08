@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.qituo.dcrapi.particles.DcRenderApiParticleManager;
 import com.qituo.dcrapi.particles.ServerParticleGroupManager;
 import com.qituo.dcrapi.particles.ClientParticleGroupManager;
+import com.qituo.dcrapi.particles.ParticleAnimationExample;
 import com.qituo.dcrapi.particles.style.ParticleStyleManager;
 import com.qituo.dcrapi.particles.emitters.ParticleEmitterManager;
 import com.qituo.dcrapi.animation.AnimateManager;
@@ -33,24 +34,26 @@ import java.io.File;
 public class DcRenderApi {
     public static final String MOD_ID = "dcrapi";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-    
+
     public DcRenderApi() {
-        // 注册事件监听器
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // Forge 1.20.1 使用 FMLJavaModLoadingContext 获取事件总线
+        var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        modEventBus.addListener(this::setup);
         MinecraftForge.EVENT_BUS.addListener(this::serverTick);
         MinecraftForge.EVENT_BUS.addListener(this::clientTick);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
-        
+
         // 注册粒子类型
-        DcRenderApiParticleManager.PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-        
+        DcRenderApiParticleManager.PARTICLE_TYPES.register(modEventBus);
+
         // 注册物品
-        DcRenderApiItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        
+        DcRenderApiItems.ITEMS.register(modEventBus);
+
         // 注册创造物品栏
-        DcRenderApiCreativeTab.register(FMLJavaModLoadingContext.get().getModEventBus());
-        
+        DcRenderApiCreativeTab.register(modEventBus);
+
         LOGGER.info("DC Render API initialized");
     }
     
@@ -83,6 +86,7 @@ public class DcRenderApi {
             ServerParticleGroupManager.tick();
             ParticleStyleManager.tickServer();
             ParticleEmitterManager.tickServer();
+            ParticleAnimationExample.tickAll();
             AnimateManager.INSTANCE.tickServer();
             BarrageManager.doTick();
             DisplayEntityManager.doTick();
@@ -90,7 +94,7 @@ public class DcRenderApi {
             EffectManager.doTick();
         }
     }
-    
+
     private void clientTick(final TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ClientParticleGroupManager.tick();

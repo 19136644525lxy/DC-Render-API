@@ -5,9 +5,56 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import com.qituo.dcrapi.platform.DcRenderApiServices;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 粒子动画示例
+ * 注意：所有动画更新由主线程（ServerParticleGroupManager.tick）驱动，禁止裸线程
+ */
 public class ParticleAnimationExample {
-    
+
+    /** 活跃动画列表，由主线程 tick 驱动 */
+    private static final List<AnimatedEntry> activeAnimations = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /**
+     * 动画条目：记录动画组和剩余 tick
+     */
+    private static class AnimatedEntry {
+        final AnimatedParticleGroup animatedGroup;
+        final int maxTick;
+        int currentTick;
+
+        AnimatedEntry(AnimatedParticleGroup group, int maxTick) {
+            this.animatedGroup = group;
+            this.maxTick = maxTick;
+            this.currentTick = 0;
+        }
+
+        boolean tick() {
+            animatedGroup.update(currentTick);
+            currentTick++;
+            return currentTick < maxTick;
+        }
+    }
+
+    /**
+     * 主线程 tick 驱动所有活跃动画
+     */
+    public static void tickAll() {
+        List<AnimatedEntry> toRemove = new ArrayList<>();
+        for (AnimatedEntry entry : activeAnimations) {
+            if (!entry.tick()) {
+                toRemove.add(entry);
+            }
+        }
+        if (!toRemove.isEmpty()) {
+            activeAnimations.removeAll(toRemove);
+        }
+    }
+
     /**
      * 创建圆形轨道粒子效果
      */
@@ -15,33 +62,27 @@ public class ParticleAnimationExample {
         ServerParticleGroup group = new ServerParticleGroup();
         group.visibleRange = 100.0;
         group.clientMaxTick = 200;
-        
-        // 创建动画粒子组
+
         AnimatedParticleGroup animatedGroup = new AnimatedParticleGroup(group);
-        
-        // 添加粒子和动画
+
         for (int i = 0; i < particleCount; i++) {
-            // 在服务器端创建粒子
-        DcRenderApiParticleManager.createServerParticle(
-            level,
-            ParticleTypes.FLAME,
-            ParticleTypes.FLAME,
-            center
-        );
-        
-        // 创建客户端可控粒子（如果在客户端）
-        int particleId = DcRenderApiParticleManager.createParticle(
-            ParticleTypes.FLAME,
-            ParticleTypes.FLAME,
-            center
-        );
-            
-            // 将粒子添加到粒子组
+            // 服务端发送粒子
+            DcRenderApiParticleManager.createServerParticle(
+                level, ParticleTypes.FLAME, ParticleTypes.FLAME, center
+            );
+
+            // 仅客户端创建可控粒子
+            int particleId = -1;
+            if (DcRenderApiServices.isClient()) {
+                particleId = DcRenderApiParticleManager.createParticle(
+                    ParticleTypes.FLAME, ParticleTypes.FLAME, center
+                );
+            }
+
             if (particleId != -1) {
                 group.addParticle(particleId);
             }
-            
-            // 使用Kotlin的动画函数
+
             final int index = i;
             animatedGroup.addParticleAnimation(particleId, (pos, tick) -> {
                 double angleOffset = (double) index / particleCount * Math.PI * 2;
@@ -50,23 +91,11 @@ public class ParticleAnimationExample {
                 );
             });
         }
-        
-        // 添加到管理器
+
         ServerParticleGroupManager.addParticleGroup(group, center, level);
-        
-        // 启动动画更新
-        new Thread(() -> {
-            for (int tick = 0; tick < 200; tick++) {
-                animatedGroup.update(tick);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        activeAnimations.add(new AnimatedEntry(animatedGroup, 200));
     }
-    
+
     /**
      * 创建螺旋粒子效果
      */
@@ -74,30 +103,25 @@ public class ParticleAnimationExample {
         ServerParticleGroup group = new ServerParticleGroup();
         group.visibleRange = 100.0;
         group.clientMaxTick = 300;
-        
+
         AnimatedParticleGroup animatedGroup = new AnimatedParticleGroup(group);
-        
+
         for (int i = 0; i < particleCount; i++) {
-            // 在服务器端创建粒子
             DcRenderApiParticleManager.createServerParticle(
-                level,
-                ParticleTypes.END_ROD,
-                ParticleTypes.END_ROD,
-                startPos
+                level, ParticleTypes.END_ROD, ParticleTypes.END_ROD, startPos
             );
-            
-            // 创建客户端可控粒子（如果在客户端）
-            int particleId = DcRenderApiParticleManager.createParticle(
-                ParticleTypes.END_ROD,
-                ParticleTypes.END_ROD,
-                startPos
-            );
-            
-            // 将粒子添加到粒子组
+
+            int particleId = -1;
+            if (DcRenderApiServices.isClient()) {
+                particleId = DcRenderApiParticleManager.createParticle(
+                    ParticleTypes.END_ROD, ParticleTypes.END_ROD, startPos
+                );
+            }
+
             if (particleId != -1) {
                 group.addParticle(particleId);
             }
-            
+
             final int index = i;
             animatedGroup.addParticleAnimation(particleId, (pos, tick) -> {
                 double heightOffset = (double) index / particleCount * height;
@@ -106,21 +130,11 @@ public class ParticleAnimationExample {
                 );
             });
         }
-        
+
         ServerParticleGroupManager.addParticleGroup(group, startPos, level);
-        
-        new Thread(() -> {
-            for (int tick = 0; tick < 300; tick++) {
-                animatedGroup.update(tick);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        activeAnimations.add(new AnimatedEntry(animatedGroup, 300));
     }
-    
+
     /**
      * 创建波浪粒子效果
      */
@@ -128,33 +142,28 @@ public class ParticleAnimationExample {
         ServerParticleGroup group = new ServerParticleGroup();
         group.visibleRange = 100.0;
         group.clientMaxTick = 200;
-        
+
         AnimatedParticleGroup animatedGroup = new AnimatedParticleGroup(group);
-        
+
         for (int i = 0; i < particleCount; i++) {
             double x = startPos.x + (double) i / particleCount * length;
             Vec3 particlePos = new Vec3(x, startPos.y, startPos.z);
-            
-            // 在服务器端创建粒子
+
             DcRenderApiParticleManager.createServerParticle(
-                level,
-                ParticleTypes.BUBBLE,
-                ParticleTypes.BUBBLE,
-                particlePos
+                level, ParticleTypes.BUBBLE, ParticleTypes.BUBBLE, particlePos
             );
-            
-            // 创建客户端可控粒子（如果在客户端）
-            int particleId = DcRenderApiParticleManager.createParticle(
-                ParticleTypes.BUBBLE,
-                ParticleTypes.BUBBLE,
-                particlePos
-            );
-            
-            // 将粒子添加到粒子组
+
+            int particleId = -1;
+            if (DcRenderApiServices.isClient()) {
+                particleId = DcRenderApiParticleManager.createParticle(
+                    ParticleTypes.BUBBLE, ParticleTypes.BUBBLE, particlePos
+                );
+            }
+
             if (particleId != -1) {
                 group.addParticle(particleId);
             }
-            
+
             final double offset = (double) i / particleCount * length;
             animatedGroup.addParticleAnimation(particleId, (pos, tick) -> {
                 return ParticleAnimation.Companion.createWaveMotion(
@@ -163,18 +172,8 @@ public class ParticleAnimationExample {
                 );
             });
         }
-        
+
         ServerParticleGroupManager.addParticleGroup(group, startPos, level);
-        
-        new Thread(() -> {
-            for (int tick = 0; tick < 200; tick++) {
-                animatedGroup.update(tick);
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        activeAnimations.add(new AnimatedEntry(animatedGroup, 200));
     }
 }

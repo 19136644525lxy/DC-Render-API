@@ -1,0 +1,6 @@
+{
+  "item.dcrapi.particle_tester": "Particle Tester",
+  "item.dcrapi.particle_tester.mode_switch": "Test mode switched to: %s",
+  "itemGroup.dcrapi": "DC Render API",
+  "itemGroup.dcrapi.render_api_items": "DC Render API"
+}

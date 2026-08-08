@@ -9,6 +9,7 @@ import com.qituo.dcrapi.event.ParticleHitEntityEvent;
 import com.qituo.dcrapi.event.EventPriority;
 import com.qituo.dcrapi.event.EventHandler;
 import com.qituo.dcrapi.config.DcRenderApiConfig;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -24,65 +25,78 @@ import net.minecraft.world.phys.Vec3;
 /**
  * 粒子测试器物品
  * 用于测试和演示 DC Render API 的功能
- * 
+ *
  * 使用方式：
  * - 右键：生成粒子
  * - 潜行+右键：切换测试模式
  */
 public class ParticleTesterItem extends Item {
-    private static ParticleType currentParticleType = ParticleType.BASIC;
-    
+    private static final String NBT_KEY_MODE = "ParticleMode";
+
     public ParticleTesterItem(Properties properties) {
         super(properties);
     }
-    
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        
+
         if (player.isShiftKeyDown()) {
-            // 潜行右键：切换测试模式
-            if (level.isClientSide) {
-                switchParticleType(player);
+            // 潜行右键：切换测试模式（存储到物品 NBT，避免多玩家共享状态）
+            if (!level.isClientSide) {
+                switchParticleType(player, stack);
             }
             return InteractionResultHolder.success(stack);
         }
-        
+
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
             // 右键：生成粒子
-            spawnParticles(serverLevel, player);
+            spawnParticles(serverLevel, player, stack);
             return InteractionResultHolder.success(stack);
         }
-        
+
         return InteractionResultHolder.pass(stack);
     }
-    
+
     /**
-     * 切换粒子类型
+     * 从物品 NBT 读取当前模式
      */
-    private void switchParticleType(Player player) {
+    private ParticleType getMode(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTag();
+        if (tag.contains(NBT_KEY_MODE)) {
+            return ParticleType.byName(tag.getString(NBT_KEY_MODE));
+        }
+        return ParticleType.BASIC;
+    }
+
+    /**
+     * 切换粒子类型（写入物品 NBT）
+     */
+    private void switchParticleType(Player player, ItemStack stack) {
+        ParticleType current = getMode(stack);
         ParticleType[] types = ParticleType.values();
-        int nextIndex = (currentParticleType.ordinal() + 1) % types.length;
-        currentParticleType = types[nextIndex];
-        
+        ParticleType next = types[(current.ordinal() + 1) % types.length];
+        stack.getOrCreateTag().putString(NBT_KEY_MODE, next.getName());
+
         player.displayClientMessage(
-            Component.translatable("item.dcrapi.particle_tester.mode_switch", currentParticleType.getName()),
+            Component.translatable("item.dcrapi.particle_tester.mode_switch", next.getName()),
             true
         );
     }
-    
+
     /**
      * 生成粒子
      */
-    private void spawnParticles(ServerLevel level, Player player) {
+    private void spawnParticles(ServerLevel level, Player player, ItemStack stack) {
         Vec3 pos = player.position().add(0, 1, 0);
-        
-        switch (currentParticleType) {
+        ParticleType mode = getMode(stack);
+
+        switch (mode) {
             case BASIC -> spawnBasicParticles(level, pos);
             case BUILDER -> spawnWithBuilder(level, pos);
             case EVENT -> spawnWithEvent(level, pos, player);
         }
-        
+
         // 播放音效
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
             SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f, 1.0f);
@@ -156,15 +170,22 @@ public class ParticleTesterItem extends Item {
         BASIC("Basic"),
         BUILDER("Builder"),
         EVENT("Event");
-        
+
         private final String name;
-        
+
         ParticleType(String name) {
             this.name = name;
         }
-        
+
         public String getName() {
             return name;
+        }
+
+        public static ParticleType byName(String name) {
+            for (ParticleType type : values()) {
+                if (type.name.equals(name)) return type;
+            }
+            return BASIC;
         }
     }
     

@@ -1,0 +1,6 @@
+{
+  "item.dcrapi.particle_tester": "粒子测试器",
+  "item.dcrapi.particle_tester.mode_switch": "测试模式切换为: %s",
+  "itemGroup.dcrapi": "DC Render API",
+  "itemGroup.dcrapi.render_api_items": "DC Render API"
+}

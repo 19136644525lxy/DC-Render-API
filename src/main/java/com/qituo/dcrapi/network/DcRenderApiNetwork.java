@@ -17,9 +17,9 @@ public class DcRenderApiNetwork {
         PROTOCOL_VERSION::equals,
         PROTOCOL_VERSION::equals
     );
-    
+
     private static int nextId = 0;
-    
+
     public static void registerPackets() {
         // 注册粒子相关的网络包
         CHANNEL.registerMessage(nextId++,

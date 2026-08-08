@@ -12,6 +12,7 @@ import com.qituo.dcrapi.particles.builder.ParticleGroupBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
@@ -28,9 +29,13 @@ import net.minecraft.world.World;
  * 原理：Forge 用 InteractionResultHolder + Level/Player/InteractionHand，
  *      Fabric 1.20.1 yarn 用 TypedActionResult + World/PlayerEntity/Hand。
  *      API 名称变化但语义一致。
+ *
+ * 注意：currentParticleType 存储在物品 NBT，避免静态字段被多个玩家共享，
+ *      多人模式下切换粒子类型互不干扰。
  */
 public class ParticleTesterItem extends Item {
-    private static ParticleType currentParticleType = ParticleType.BASIC;
+
+    private static final String NBT_KEY_TYPE = "dcrapi_particle_type";
 
     public ParticleTesterItem(Settings settings) {
         super(settings);
@@ -43,14 +48,14 @@ public class ParticleTesterItem extends Item {
         if (player.isSneaking()) {
             // 潜行右键：切换测试模式（仅客户端执行显示）
             if (world.isClient) {
-                switchParticleType(player);
+                switchParticleType(player, stack);
             }
             return TypedActionResult.success(stack);
         }
 
         if (!world.isClient && world instanceof ServerWorld serverWorld) {
             // 右键：生成粒子
-            spawnParticles(serverWorld, player);
+            spawnParticles(serverWorld, player, stack);
             return TypedActionResult.success(stack);
         }
 
@@ -58,15 +63,39 @@ public class ParticleTesterItem extends Item {
     }
 
     /**
+     * 从物品 NBT 读取当前粒子类型
+     */
+    private ParticleType getParticleType(ItemStack stack) {
+        NbtCompound tag = stack.getNbt();
+        int ordinal = 0;
+        if (tag != null && tag.contains(NBT_KEY_TYPE)) {
+            ordinal = tag.getInt(NBT_KEY_TYPE);
+        }
+        ParticleType[] types = ParticleType.values();
+        if (ordinal < 0 || ordinal >= types.length) ordinal = 0;
+        return types[ordinal];
+    }
+
+    /**
+     * 写入粒子类型到物品 NBT
+     */
+    private void setParticleType(ItemStack stack, ParticleType type) {
+        NbtCompound tag = stack.getOrCreateNbt();
+        tag.putInt(NBT_KEY_TYPE, type.ordinal());
+    }
+
+    /**
      * 切换粒子类型
      */
-    private void switchParticleType(PlayerEntity player) {
+    private void switchParticleType(PlayerEntity player, ItemStack stack) {
+        ParticleType current = getParticleType(stack);
         ParticleType[] types = ParticleType.values();
-        int nextIndex = (currentParticleType.ordinal() + 1) % types.length;
-        currentParticleType = types[nextIndex];
+        int nextIndex = (current.ordinal() + 1) % types.length;
+        ParticleType next = types[nextIndex];
+        setParticleType(stack, next);
 
         player.sendMessage(
-            Text.translatable("item.dcrapi.particle_tester.mode_switch", currentParticleType.getName()),
+            Text.translatable("item.dcrapi.particle_tester.mode_switch", next.getName()),
             true
         );
     }
@@ -74,10 +103,11 @@ public class ParticleTesterItem extends Item {
     /**
      * 生成粒子
      */
-    private void spawnParticles(ServerWorld level, PlayerEntity player) {
+    private void spawnParticles(ServerWorld level, PlayerEntity player, ItemStack stack) {
         Vec3d pos = player.getPos().add(0, 1, 0);
+        ParticleType type = getParticleType(stack);
 
-        switch (currentParticleType) {
+        switch (type) {
             case BASIC -> spawnBasicParticles(level, pos);
             case BUILDER -> spawnWithBuilder(level, pos);
             case EVENT -> spawnWithEvent(level, pos, player);

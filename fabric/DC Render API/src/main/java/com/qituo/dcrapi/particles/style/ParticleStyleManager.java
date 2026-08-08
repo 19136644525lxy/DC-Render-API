@@ -1,14 +1,14 @@
 package com.qituo.dcrapi.particles.style;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 粒子样式管理器
- * 纯 Java 标准库实现，跨平台兼容，无需修改。
+ * 纯 Java 标准库实现，跨平台兼容。
  */
 public class ParticleStyleManager {
-    private static final Map<Class<? extends ParticleStyle>, ParticleStyle.Provider<? extends ParticleStyle>> styleProviders = new HashMap<>();
+    private static final Map<Class<? extends ParticleStyle>, ParticleStyle.Provider<? extends ParticleStyle>> styleProviders = new ConcurrentHashMap<>();
 
     /**
      * 注册粒子样式

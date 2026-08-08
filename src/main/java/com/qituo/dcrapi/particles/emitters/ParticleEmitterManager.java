@@ -1,11 +1,13 @@
 package com.qituo.dcrapi.particles.emitters;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ParticleEmitterManager {
-    private static final Map<Class<? extends ParticleEmitter>, ParticleEmitter.Provider<? extends ParticleEmitter>> emitterProviders = new HashMap<>();
+    private static final Map<Class<? extends ParticleEmitter>, ParticleEmitter.Provider<? extends ParticleEmitter>> emitterProviders = new ConcurrentHashMap<>();
     private static final CopyOnWriteArrayList<ParticleEmitter> clientEmitters = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<ParticleEmitter> serverEmitters = new CopyOnWriteArrayList<>();
     
@@ -54,12 +56,16 @@ public class ParticleEmitterManager {
      * 服务器端 tick
      */
     public static void tickServer() {
+        List<ParticleEmitter> toRemove = new ArrayList<>();
         for (ParticleEmitter emitter : serverEmitters) {
             if (emitter.isValid()) {
                 emitter.tick();
             } else {
-                serverEmitters.remove(emitter);
+                toRemove.add(emitter);
             }
+        }
+        if (!toRemove.isEmpty()) {
+            serverEmitters.removeAll(toRemove);
         }
     }
     
@@ -67,12 +73,16 @@ public class ParticleEmitterManager {
      * 客户端 tick
      */
     public static void tickClient() {
+        List<ParticleEmitter> toRemove = new ArrayList<>();
         for (ParticleEmitter emitter : clientEmitters) {
             if (emitter.isValid()) {
                 emitter.tick();
             } else {
-                clientEmitters.remove(emitter);
+                toRemove.add(emitter);
             }
+        }
+        if (!toRemove.isEmpty()) {
+            clientEmitters.removeAll(toRemove);
         }
     }
     

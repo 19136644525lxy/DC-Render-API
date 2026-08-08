@@ -1,6 +1,7 @@
 package com.qituo.dcrapi.particles;
 
 import com.qituo.dcrapi.DcRenderApi;
+import com.qituo.dcrapi.platform.DcRenderApiServices;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
@@ -8,9 +9,11 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 粒子管理器（Fabric 版本）
@@ -26,12 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DcRenderApiParticleManager {
 
     private static final Map<Integer, ControlableParticle> PARTICLES = new ConcurrentHashMap<>();
-    private static int nextParticleId = 0;
+    private static final AtomicInteger nextParticleId = new AtomicInteger(0);
 
     /**
      * 创建可控粒子（客户端）
      */
     public static <T extends ParticleEffect> int createParticle(ParticleType<T> particleType, T particleOptions, Vec3d position) {
+        if (!DcRenderApiServices.isClient()) return -1;
         ClientWorld world = MinecraftClient.getInstance().world;
         if (world == null) return -1;
 
@@ -40,7 +44,7 @@ public class DcRenderApiParticleManager {
 
         // 创建可控粒子包装器
         ControlableParticle controlableParticle = new ControlableParticleImpl(position);
-        int id = nextParticleId++;
+        int id = nextParticleId.getAndIncrement();
         PARTICLES.put(id, controlableParticle);
 
         return id;
@@ -74,20 +78,19 @@ public class DcRenderApiParticleManager {
     }
 
     /**
-     * 更新所有粒子
+     * 更新所有粒子（批量移除，避免迭代中修改）
      */
     public static void tick() {
-        Iterator<Map.Entry<Integer, ControlableParticle>> iterator = PARTICLES.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, ControlableParticle> entry = iterator.next();
+        List<Integer> toRemove = new ArrayList<>();
+        for (Map.Entry<Integer, ControlableParticle> entry : PARTICLES.entrySet()) {
             ControlableParticle particle = entry.getValue();
-
             if (particle.isDead()) {
-                iterator.remove();
+                toRemove.add(entry.getKey());
             } else {
                 particle.tick();
             }
         }
+        toRemove.forEach(PARTICLES::remove);
     }
 
     /**
